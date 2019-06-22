@@ -11,6 +11,7 @@
 		29B5ED2022BE07FB005A9899 /* WordsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B5ED1F22BE07FB005A9899 /* WordsRepository.swift */; };
 		29B5ED2222BE0829005A9899 /* WordsRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B5ED2122BE0829005A9899 /* WordsRemote.swift */; };
 		29B5ED2422BE0852005A9899 /* WordsLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B5ED2322BE0852005A9899 /* WordsLocal.swift */; };
+		29B5ED2E22BE3AB8005A9899 /* Storyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B5ED2D22BE3AB8005A9899 /* Storyboard.swift */; };
 		29DF443D22BD2CC60073108D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DF443C22BD2CC60073108D /* AppDelegate.swift */; };
 		29DF443F22BD2CC60073108D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DF443E22BD2CC60073108D /* ViewController.swift */; };
 		29DF444222BD2CC60073108D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29DF444022BD2CC60073108D /* Main.storyboard */; };
@@ -35,6 +36,7 @@
 		29B5ED1F22BE07FB005A9899 /* WordsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordsRepository.swift; sourceTree = "<group>"; };
 		29B5ED2122BE0829005A9899 /* WordsRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordsRemote.swift; sourceTree = "<group>"; };
 		29B5ED2322BE0852005A9899 /* WordsLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordsLocal.swift; sourceTree = "<group>"; };
+		29B5ED2D22BE3AB8005A9899 /* Storyboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Storyboard.swift; sourceTree = "<group>"; };
 		29DF443922BD2CC60073108D /* WordsGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordsGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29DF443C22BD2CC60073108D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		29DF443E22BD2CC60073108D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +80,14 @@
 			name = wordsModule;
 			sourceTree = "<group>";
 		};
+		29B5ED2C22BE3AAD005A9899 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				29B5ED2D22BE3AB8005A9899 /* Storyboard.swift */,
+			);
+			name = extensions;
+			sourceTree = "<group>";
+		};
 		29DF443022BD2CC60073108D = {
 			isa = PBXGroup;
 			children = (
@@ -106,6 +116,7 @@
 				29DF444322BD2CC80073108D /* Assets.xcassets */,
 				29DF444522BD2CC80073108D /* LaunchScreen.storyboard */,
 				29DF444822BD2CC80073108D /* Info.plist */,
+				29B5ED2C22BE3AAD005A9899 /* extensions */,
 			);
 			path = WordsGame;
 			sourceTree = "<group>";
@@ -224,6 +235,7 @@
 				29DF443F22BD2CC60073108D /* ViewController.swift in Sources */,
 				29B5ED2222BE0829005A9899 /* WordsRemote.swift in Sources */,
 				29DF443D22BD2CC60073108D /* AppDelegate.swift in Sources */,
+				29B5ED2E22BE3AB8005A9899 /* Storyboard.swift in Sources */,
 				29DF445F22BD2DF60073108D /* Word.swift in Sources */,
 				29B5ED2022BE07FB005A9899 /* WordsRepository.swift in Sources */,
 				29B5ED1E22BE07E2005A9899 /* RepositoryContract.swift in Sources */,

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Word : Codable {
+struct Word : Codable, Equatable {
     
     let textEng : String?
     let textSpa : String?
@@ -18,6 +18,8 @@ struct Word : Codable {
         case textEng = "text_eng"
         case textSpa = "text_spa"
     }
-    
+    static func == (rhs: Word, lhs: Word) -> Bool {
+        return rhs.textEng == lhs.textEng && rhs.textSpa == lhs.textSpa
+    }
 }
 

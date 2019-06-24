@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		294AC67722C0BA7900243D9D /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294AC67622C0BA7900243D9D /* UILabel.swift */; };
 		29B5ED1E22BE07E2005A9899 /* RepositoryContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B5ED1D22BE07E2005A9899 /* RepositoryContract.swift */; };
 		29B5ED2022BE07FB005A9899 /* WordsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B5ED1F22BE07FB005A9899 /* WordsRepository.swift */; };
 		29B5ED2222BE0829005A9899 /* WordsRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B5ED2122BE0829005A9899 /* WordsRemote.swift */; };
@@ -32,6 +33,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		294AC67622C0BA7900243D9D /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		29B5ED1D22BE07E2005A9899 /* RepositoryContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryContract.swift; sourceTree = "<group>"; };
 		29B5ED1F22BE07FB005A9899 /* WordsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordsRepository.swift; sourceTree = "<group>"; };
 		29B5ED2122BE0829005A9899 /* WordsRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordsRemote.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				29B5ED2D22BE3AB8005A9899 /* Storyboard.swift */,
+				294AC67622C0BA7900243D9D /* UILabel.swift */,
 			);
 			name = extensions;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 				29DF443F22BD2CC60073108D /* GameViewController.swift in Sources */,
 				29B5ED2222BE0829005A9899 /* WordsRemote.swift in Sources */,
 				29DF443D22BD2CC60073108D /* AppDelegate.swift in Sources */,
+				294AC67722C0BA7900243D9D /* UILabel.swift in Sources */,
 				29B5ED2E22BE3AB8005A9899 /* Storyboard.swift in Sources */,
 				29DF445F22BD2DF60073108D /* Word.swift in Sources */,
 				29B5ED2022BE07FB005A9899 /* WordsRepository.swift in Sources */,

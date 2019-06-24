@@ -28,7 +28,15 @@ class GameViewController: UIViewController {
     let timeBetweenWords = 3.0
     var timeWordShown = 0.0
     var currentWordIndex = 0
-    var currentWord: Word?
+    var currentWord: Word!
+    var words: [Word] = [Word]()
+    let movingTime = TimeInterval(2)
+    var animator: UIViewPropertyAnimator!
+    var index: Int = 0
+    var allWordsShown = false
+    var successCount = 0
+    var totalTries = 0
+    var currentTranslation: Word!
     
     
     override func viewDidLoad() {
@@ -36,6 +44,10 @@ class GameViewController: UIViewController {
         
         setupButtons()
         fetchWords()
+        spaWordLabel.text = "--"
+        enWordLabel.text = "--"
+        scoreValueLabel.text = "--"
+        
     }
     
     func setupButtons() {
@@ -59,25 +71,150 @@ class GameViewController: UIViewController {
             }
             if let words = words {
                 print("words count = \(words.count)")
-                
+                self?.words = words
                 DispatchQueue.main.async {
-                    self.show()
+                    self?.startGame()
                 }
             }
         }
     }
     
-    func show() {
-        
+    func updateScore() {
+        let score = calculateScore()
+        scoreValueLabel.text = score
+    }
+    func calculateScore() -> String {
+        return "\(successCount) success of \(totalTries) "
     }
     
     @IBAction func wrongButtonTapped(_ sender: Any) {
+        if allWordsShown || !showingAWord{
+            return
+        }
         
+        totalTries += 1
+        if currentWord != currentTranslation {
+            successCount += 1
+        }
+        animator.stopAnimation(true)
+        reset(completion: {self.startGame()})
+        updateScore()
     }
     @IBAction func rightButtonTapped(_ sender: Any) {
-        
+        if allWordsShown || !showingAWord{
+            return
+        }
+       
+        totalTries += 1
+        if currentWord == currentTranslation {
+            successCount += 1
+        }
+        animator.stopAnimation(true)
+        reset(completion: {self.startGame()})
+        updateScore()
     }
     
+    func nextWord() -> Word {
+        if index >= words.count {
+            index = 0
+            allWordsShown = true
+        }
+        let word = words[index]
+        index += 1
+        currentWord = word
+        return word
+        
+    }
+    func getTranslationWord() -> Word {
+        let index = Int.random(in: 0 ..< words.count)
+        currentTranslation = words[index]
+        return currentTranslation
+    }
+    var showingAWord = false
+    func reset(completion:(()->Void)? = nil) {
+        showingAWord = false
+        spaWordLabel.text = "--"
+        enWordLabel.text = "--"
+        let resetAnimator = UIViewPropertyAnimator(duration: 0, curve: .easeOut, animations: {
+            
+            self.wordLabelTopConstraint.constant = 10
+            self.view.layoutIfNeeded()
+        })
+        resetAnimator.startAnimation()
+        resetAnimator.addCompletion { (position) in
+            
+            self.spaWordLabel.show()
+            self.spaWordLabel.text = "Ready"
+            self.animator.startAnimation()
+            self.restart()
+        }
+    }
     
+    func startGame() {
+        
+        let nextWord = self.nextWord()
+        let translationWord = self.getTranslationWord()
+        if allWordsShown {
+            index = 0
+            return
+        }
+        showingAWord = true
+        self.enWordLabel.text = nextWord.textEng
+        self.spaWordLabel.text = translationWord.textSpa
+        
+        self.view.layoutIfNeeded()
+        animator = UIViewPropertyAnimator(duration: movingTime, curve: UIView.AnimationCurve.easeIn) {
+            
+            self.wordLabelTopConstraint.constant = self.endLineView.frame.origin.y - self.spaWordLabel.frame.height //- UIApplication.shared.statusBarFrame.height
+            self.view.layoutIfNeeded()
+        }
+        animator.addCompletion { (animatingPosition) in
+            self.spaWordLabel.isHidden = true
+            self.reset()
+            self.totalTries += 1
+            self.updateScore()
+        }
+        animator.startAnimation()
+    }
+    func restart() {
+        allWordsShown = false
+        self.startGame()
+    }
+    @IBAction func startTapped(_ sender: Any? = nil) {
+        
+        reset {
+            self.startGame()
+        }
+        
+    }
 }
+
+
+/*
+ timer running always
+ function that checks for word reached the end or timeout
+ func calculate how much to move on each step
+ func to move the label
+ func to change to next word
+ 
+ override func viewDidAppear(_ animated: Bool) {
+ wordLabelMaxTopConstraintValue = endLineView.frame.origin.y
+ }
+ 
+ class CircularQueue {
+ var words = [Word]()
+ private(set) var currentPosition: Int = 0
+ func next() -> Word {
+ if currentPosition >= words.count {
+ currentPosition = 0
+ } else {
+ currentPosition += 1
+ }
+ return words[currentPosition]
+ }
+ func current() -> Word {
+ return words[currentPosition]
+ }
+ }
+ */
 

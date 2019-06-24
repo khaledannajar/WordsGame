@@ -18,6 +18,7 @@ class GameViewController: UIViewController {
     @IBOutlet weak var scoreValueLabel: UILabel!
     @IBOutlet weak var endLineView: UIView!
     
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var wordLabelTopConstraint: NSLayoutConstraint!
     private let wordLabelTopConstraintDefaultValue: CGFloat = 10
     private var wordLabelMaxTopConstraintValue: CGFloat = 200
@@ -42,8 +43,17 @@ class GameViewController: UIViewController {
         wrongButton.layer.cornerRadius = 5
     }
     
+    func hideActivityIndicator() {
+        self.activityIndicator.stopAnimating()
+        self.activityIndicator.isHidden = true
+    }
+    
     func fetchWords() {
-        repo.getWords(refresh: true) { (words, error) in
+        activityIndicator.startAnimating()
+        repo.getWords(refresh: true) { [weak self] (words, error) in
+            DispatchQueue.main.async {
+                self?.hideActivityIndicator()
+            }
             if error != nil {
                 print(error!)
             }

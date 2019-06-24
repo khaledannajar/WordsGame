@@ -189,32 +189,3 @@ class GameViewController: UIViewController {
     }
 }
 
-
-/*
- timer running always
- function that checks for word reached the end or timeout
- func calculate how much to move on each step
- func to move the label
- func to change to next word
- 
- override func viewDidAppear(_ animated: Bool) {
- wordLabelMaxTopConstraintValue = endLineView.frame.origin.y
- }
- 
- class CircularQueue {
- var words = [Word]()
- private(set) var currentPosition: Int = 0
- func next() -> Word {
- if currentPosition >= words.count {
- currentPosition = 0
- } else {
- currentPosition += 1
- }
- return words[currentPosition]
- }
- func current() -> Word {
- return words[currentPosition]
- }
- }
- */
-

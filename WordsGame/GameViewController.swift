@@ -8,6 +8,104 @@
 
 import UIKit
 
+class ViewModel {
+    let view: GameViewController // use protocol
+    let repo = WordsRepository()
+    
+    var showingAWord = false
+    let movingTime = TimeInterval(2)
+    
+    var index: Int = 0
+    var allWordsShown = false
+    var successCount = 0
+    var totalTries = 0
+    
+    var currentWord: Word! {
+        didSet {
+            
+        }
+    }
+    var currentTranslation: Word!
+    var words: [Word]! {
+        didSet {
+            //            view.startGame()
+        }
+    }
+    var score: String {
+        didSet {
+            view.updateScore()
+        }
+    }
+    
+    init(view: GameViewController) {
+        self.view = view
+    }
+    var callingServer = false {
+        didSet {
+            DispatchQueue.main.async {
+                self.view.hideProgress()
+            }
+        }
+    }
+    func fetchWords() {
+        callingServer = true
+        repo.getWords(refresh: true) { [weak self] (words, error) in
+            self?.callingServer = false
+            if error != nil {
+                print(error!)
+            }
+            if let words = words {
+                print("words count = \(words.count)")
+                self?.words = words
+                DispatchQueue.main.async {
+                    self?.view.startGame()
+                }
+            }
+        }
+    }
+    
+    func rightAction() {
+        if allWordsShown || !showingAWord{
+            return
+        }
+        
+        totalTries += 1
+        if currentWord == currentTranslation {
+            successCount += 1
+        }
+        view.distrubWordShowing()
+        reset(completion: {self.startGame()})
+        score = calculateScore()
+    }
+    func wrongAction() {
+        if allWordsShown || !showingAWord{
+            return
+        }
+        
+        totalTries += 1
+        if currentWord != currentTranslation {
+            successCount += 1
+        }
+        view.distrubWordShowing()
+        reset(completion: {self.startGame()})
+        score = calculateScore()
+    }
+    
+    func calculateScore() -> String {
+        return "\(successCount) success of \(totalTries) "
+    }
+    
+    func nextWord(){
+        if index >= words.count {
+            index = 0
+            allWordsShown = true
+        }
+        let word = words[index]
+        index += 1
+        currentWord = word
+    }
+}
+
 class GameViewController: UIViewController {
 
     @IBOutlet weak var spaWordLabel: UILabel!
@@ -22,28 +120,16 @@ class GameViewController: UIViewController {
     @IBOutlet weak var wordLabelTopConstraint: NSLayoutConstraint!
     private let wordLabelTopConstraintDefaultValue: CGFloat = 10
     private var wordLabelMaxTopConstraintValue: CGFloat = 200
-    let repo = WordsRepository()
-    
-    var tappedAbutton = false
-    let timeBetweenWords = 3.0
-    var timeWordShown = 0.0
-    var currentWordIndex = 0
-    var currentWord: Word!
-    var words: [Word] = [Word]()
-    let movingTime = TimeInterval(2)
     var animator: UIViewPropertyAnimator!
-    var index: Int = 0
-    var allWordsShown = false
-    var successCount = 0
-    var totalTries = 0
-    var currentTranslation: Word!
-    
-    
+    lazy var model = ViewModel(view: self)
+    func distrubWordShowing() {
+        animator.stopAnimation(true)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupButtons()
-        fetchWords()
+        model.fetchWords()
         spaWordLabel.text = "--"
         enWordLabel.text = "--"
         scoreValueLabel.text = "--"
@@ -55,82 +141,36 @@ class GameViewController: UIViewController {
         wrongButton.layer.cornerRadius = 5
     }
     
-    func hideActivityIndicator() {
-        self.activityIndicator.stopAnimating()
-        self.activityIndicator.isHidden = true
+    
+    func showProgress() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    func hideProgress() {
+        activityIndicator.stopAnimating()
+        activityIndicator.isHidden = true
     }
     
-    func fetchWords() {
-        activityIndicator.startAnimating()
-        repo.getWords(refresh: true) { [weak self] (words, error) in
-            DispatchQueue.main.async {
-                self?.hideActivityIndicator()
-            }
-            if error != nil {
-                print(error!)
-            }
-            if let words = words {
-                print("words count = \(words.count)")
-                self?.words = words
-                DispatchQueue.main.async {
-                    self?.startGame()
-                }
-            }
-        }
-    }
     
     func updateScore() {
-        let score = calculateScore()
-        scoreValueLabel.text = score
+        scoreValueLabel.text = model.score
     }
-    func calculateScore() -> String {
-        return "\(successCount) success of \(totalTries) "
-    }
+    
     
     @IBAction func wrongButtonTapped(_ sender: Any) {
-        if allWordsShown || !showingAWord{
-            return
-        }
-        
-        totalTries += 1
-        if currentWord != currentTranslation {
-            successCount += 1
-        }
-        animator.stopAnimation(true)
-        reset(completion: {self.startGame()})
-        updateScore()
+        model.wrongAction()
     }
     @IBAction func rightButtonTapped(_ sender: Any) {
-        if allWordsShown || !showingAWord{
-            return
-        }
-       
-        totalTries += 1
-        if currentWord == currentTranslation {
-            successCount += 1
-        }
-        animator.stopAnimation(true)
-        reset(completion: {self.startGame()})
-        updateScore()
+       model.rightAction()
     }
     
-    func nextWord() -> Word {
-        if index >= words.count {
-            index = 0
-            allWordsShown = true
-        }
-        let word = words[index]
-        index += 1
-        currentWord = word
-        return word
-        
-    }
+    
     func getTranslationWord() -> Word {
         let index = Int.random(in: 0 ..< words.count)
         currentTranslation = words[index]
         return currentTranslation
     }
-    var showingAWord = false
+    
     func reset(completion:(()->Void)? = nil) {
         showingAWord = false
         spaWordLabel.text = "--"

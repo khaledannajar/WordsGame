@@ -22,10 +22,14 @@ class ViewModel {
     
     var currentWord: Word! {
         didSet {
-            
+            view.updateWord()
         }
     }
-    var currentTranslation: Word!
+    var currentTranslation: Word! {
+        didSet {
+            view.updateTranslationWord()
+        }
+    }
     var words: [Word]! {
         didSet {
             //            view.startGame()
@@ -74,7 +78,7 @@ class ViewModel {
             successCount += 1
         }
         view.distrubWordShowing()
-        reset(completion: {self.startGame()})
+        reset()
         score = calculateScore()
     }
     func wrongAction() {
@@ -87,7 +91,8 @@ class ViewModel {
             successCount += 1
         }
         view.distrubWordShowing()
-        reset(completion: {self.startGame()})
+        showNextWord()
+        reset()
         score = calculateScore()
     }
     
@@ -97,17 +102,120 @@ class ViewModel {
     
     func nextWord(){
         if index >= words.count {
-            index = 0
             allWordsShown = true
+            return
         }
+        
         let word = words[index]
-        index += 1
         currentWord = word
+        index += 1
     }
+    
+    func getTranslationWord() {
+        if allWordsShown {
+            return
+        }
+        let index = Int.random(in: 0 ..< words.count)
+        currentTranslation = words[index]
+    }
+    func showNextWord() {
+        if index >= words.count {
+            resetToBegining()
+            return
+        }
+        
+    }
+    func reset() {
+        showingAWord = false
+        allWordsShown = false
+        view.reset {
+            self.startGame()
+        }
+    }
+    func resetToBegining() {
+        index = 0
+    }
+    
+    func startGame() {
+        
+        self.nextWord()
+        self.getTranslationWord()
+        if allWordsShown {
+            index = 0
+            return
+        }
+        showingAWord = true
+        
+        
+      view.animateWordMovment()
+    }
+    
 }
 
 class GameViewController: UIViewController {
-
+    func updateTranslationWord() {
+        let translation = model.currentTranslation
+        spaWordLabel.text = translation?.textSpa
+    }
+    func updateWord() {
+        let word = model.currentWord
+        enWordLabel.text = word?.textEng
+    }
+    func animateWordMovment() {
+        animator = UIViewPropertyAnimator(duration: model.movingTime, curve: UIView.AnimationCurve.easeIn) {
+            
+            self.wordLabelTopConstraint.constant = self.endLineView.frame.origin.y - self.spaWordLabel.frame.height //- UIApplication.shared.statusBarFrame.height
+            self.view.layoutIfNeeded()
+        }
+        animator.addCompletion { (animatingPosition) in
+            self.spaWordLabel.isHidden = true
+            self.reset()
+            self.model.totalTries += 1
+            self.updateScore()
+        }
+        animator.startAnimation()
+    }
+//    func startGame() {
+//
+//        let nextWord = self.nextWord()
+//        let translationWord = self.getTranslationWord()
+//        if allWordsShown {
+//            index = 0
+//            return
+//        }
+//        showingAWord = true
+//        self.enWordLabel.text = nextWord.textEng
+//        self.spaWordLabel.text = translationWord.textSpa
+//
+//        self.view.layoutIfNeeded()
+//        animator = UIViewPropertyAnimator(duration: movingTime, curve: UIView.AnimationCurve.easeIn) {
+//
+//            self.wordLabelTopConstraint.constant = self.endLineView.frame.origin.y - self.spaWordLabel.frame.height //- UIApplication.shared.statusBarFrame.height
+//            self.view.layoutIfNeeded()
+//        }
+//        animator.addCompletion { (animatingPosition) in
+//            self.spaWordLabel.isHidden = true
+//            self.reset()
+//            self.totalTries += 1
+//            self.updateScore()
+//        }
+//        animator.startAnimation()
+//    }
+    
+    func reset(completion:(()->Void)? = nil) {
+        
+        spaWordLabel.text = "--"
+        enWordLabel.text = "--"
+        let resetAnimator = UIViewPropertyAnimator(duration: 0, curve: .easeOut, animations: {
+            self.wordLabelTopConstraint.constant = 10
+            self.view.layoutIfNeeded()
+        })
+        resetAnimator.addCompletion { (position) in
+            self.spaWordLabel.show()
+        }
+        resetAnimator.startAnimation()
+    }
+    
     @IBOutlet weak var spaWordLabel: UILabel!
     @IBOutlet weak var enWordLabel: UILabel!
     @IBOutlet weak var rightButton: UIButton!
@@ -165,61 +273,13 @@ class GameViewController: UIViewController {
     }
     
     
-    func getTranslationWord() -> Word {
-        let index = Int.random(in: 0 ..< words.count)
-        currentTranslation = words[index]
-        return currentTranslation
+    func updateTextLabels() {
+        spaWordLabel.text = model.getTranslationWord().textSpa
+        enWordLabel.text = model.currentWord.textEng
     }
     
-    func reset(completion:(()->Void)? = nil) {
-        showingAWord = false
-        spaWordLabel.text = "--"
-        enWordLabel.text = "--"
-        let resetAnimator = UIViewPropertyAnimator(duration: 0, curve: .easeOut, animations: {
-            
-            self.wordLabelTopConstraint.constant = 10
-            self.view.layoutIfNeeded()
-        })
-        resetAnimator.startAnimation()
-        resetAnimator.addCompletion { (position) in
-            
-            self.spaWordLabel.show()
-            self.spaWordLabel.text = "Ready"
-            self.animator.startAnimation()
-            self.restart()
-        }
-    }
     
-    func startGame() {
-        
-        let nextWord = self.nextWord()
-        let translationWord = self.getTranslationWord()
-        if allWordsShown {
-            index = 0
-            return
-        }
-        showingAWord = true
-        self.enWordLabel.text = nextWord.textEng
-        self.spaWordLabel.text = translationWord.textSpa
-        
-        self.view.layoutIfNeeded()
-        animator = UIViewPropertyAnimator(duration: movingTime, curve: UIView.AnimationCurve.easeIn) {
-            
-            self.wordLabelTopConstraint.constant = self.endLineView.frame.origin.y - self.spaWordLabel.frame.height //- UIApplication.shared.statusBarFrame.height
-            self.view.layoutIfNeeded()
-        }
-        animator.addCompletion { (animatingPosition) in
-            self.spaWordLabel.isHidden = true
-            self.reset()
-            self.totalTries += 1
-            self.updateScore()
-        }
-        animator.startAnimation()
-    }
-    func restart() {
-        allWordsShown = false
-        self.startGame()
-    }
+    
     @IBAction func startTapped(_ sender: Any? = nil) {
         
         reset {
